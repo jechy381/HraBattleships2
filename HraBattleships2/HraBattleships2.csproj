@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <Reference Include="GymVod.Battleships.Common">
-      <HintPath>..\..\..\..\Desktop\GymVod.Battleships.Common.dll</HintPath>
+      <HintPath>..\..\..\..\Downloads\GymVod.Battleships.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
 
