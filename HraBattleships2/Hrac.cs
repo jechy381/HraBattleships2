@@ -73,7 +73,6 @@ namespace HraBattleships2
         }
 
 
-
         Random rnd = new Random();
         public Position GetRandomPosition(HashSet<Position> hits, HashSet<Position> misses)
         {
