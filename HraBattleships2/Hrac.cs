@@ -22,11 +22,11 @@ namespace HraBattleships2
 
             var shipPositions = new List<ShipPosition>();
 
-            shipPositions.Add(new ShipPosition(ShipType.Submarine, new Position(2, 3), Orientation.Right));
-            shipPositions.Add(new ShipPosition(ShipType.Destroyer, new Position(13, 5), Orientation.Right));
-            shipPositions.Add(new ShipPosition(ShipType.Cruiser, new Position(5, 6), Orientation.Down));
-            shipPositions.Add(new ShipPosition(ShipType.Battleship, new Position(9, 11), Orientation.Down));
-            shipPositions.Add(new ShipPosition(ShipType.Carrier, new Position(2, 13), Orientation.Right));
+            shipPositions.Add(new ShipPosition(ShipType.Submarine, new Position(1, 2), Orientation.Right));
+            shipPositions.Add(new ShipPosition(ShipType.Destroyer, new Position(12, 4), Orientation.Right));
+            shipPositions.Add(new ShipPosition(ShipType.Cruiser, new Position(4,5), Orientation.Down));
+            shipPositions.Add(new ShipPosition(ShipType.Battleship, new Position(8, 10), Orientation.Down));
+            shipPositions.Add(new ShipPosition(ShipType.Carrier, new Position(1, 12), Orientation.Right));
 
             /*foreach (var shipType in gameSettings.ShipTypes.OrderByDescending(x => (int)x))
             {
@@ -57,6 +57,7 @@ namespace HraBattleships2
             }
             else
             {
+                
                 return null;
             }
         }
