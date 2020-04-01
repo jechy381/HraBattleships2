@@ -59,7 +59,7 @@ namespace HraBattleships2
             }
             else
             {
-                if (horizontal = true)
+                if (horizontal == true)
                 {
                     ModeDamageHorizontal(/*tady by měla být ta pozice z toho pole hits*/);                   
                 }
@@ -114,9 +114,9 @@ namespace HraBattleships2
 
         public Position ModeDamageHorizontal(byte x, byte y)
         {
-            bool jeSmeremDoprava;
+            bool jeSmeremDoprava = true;
 
-            if (jeSmeremDoprava = true)
+            if (jeSmeremDoprava == true)
             {
                 if (/*kontrola že je políčko o jedna vpravo součástí pole hits*/)
                 {
@@ -156,7 +156,7 @@ namespace HraBattleships2
         {
             bool jeSmeremNahoru = true;
 
-            if(jeSmeremNahoru = true)
+            if(jeSmeremNahoru == true)
             {
                 if (/*kontrola že je políčko o jedna nahoru součástí pole hits*/)
                 {
