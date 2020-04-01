@@ -24,6 +24,7 @@ namespace HraBattleships2
             height = gameSettings.BoardHeight;
             width = gameSettings.BoardWidth;
 
+            ExludePositions(misses, width);
             var shipPositions = new List<ShipPosition>();
 
             shipPositions.Add(new ShipPosition(ShipType.Submarine, new Position(1, 2), Orientation.Right));
@@ -32,6 +33,21 @@ namespace HraBattleships2
             shipPositions.Add(new ShipPosition(ShipType.Battleship, new Position(8, 10), Orientation.Down));
             shipPositions.Add(new ShipPosition(ShipType.Carrier, new Position(1, 12), Orientation.Right));
             return shipPositions.ToArray();
+        }
+        //probehne na startu
+        public void ExludePositions(HashSet<Position> exlude, int width)
+        {
+            for (int i = 0; i <= width; i++)
+            {
+                exlude.Add(new Position(0, (byte)i));
+                exlude.Add(new Position(15, (byte)i));
+                exlude.Add(new Position((byte)i, 0));
+                exlude.Add(new Position((byte)i, 15));
+            }
+        }
+        public void ExludeAdjacentToSunkenShip()
+        {
+
         }
 
         HashSet<Position> misses = new HashSet<Position>();
