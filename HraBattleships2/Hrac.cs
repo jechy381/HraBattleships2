@@ -15,6 +15,8 @@ namespace HraBattleships2
         }
         GameState gameState = GameState.Seek;
 
+        public bool horizontal = true;
+
         public ShipPosition[] NewGame(GameSettings gameSettings)
         {
             height = gameSettings.BoardHeight;
@@ -24,7 +26,7 @@ namespace HraBattleships2
 
             shipPositions.Add(new ShipPosition(ShipType.Submarine, new Position(1, 2), Orientation.Right));
             shipPositions.Add(new ShipPosition(ShipType.Destroyer, new Position(12, 4), Orientation.Right));
-            shipPositions.Add(new ShipPosition(ShipType.Cruiser, new Position(4,5), Orientation.Down));
+            shipPositions.Add(new ShipPosition(ShipType.Cruiser, new Position(4, 5), Orientation.Down));
             shipPositions.Add(new ShipPosition(ShipType.Battleship, new Position(8, 10), Orientation.Down));
             shipPositions.Add(new ShipPosition(ShipType.Carrier, new Position(1, 12), Orientation.Right));
 
@@ -57,8 +59,14 @@ namespace HraBattleships2
             }
             else
             {
-                
-                return null;
+                if (horizontal = true)
+                {
+                    ModeDamageHorizontal(/*tady by měla být ta pozice z toho pole hits*/);                   
+                }
+                else
+                {
+                    ModeDamageVertical(/*tady by měla být ta pozice z toho pole hits*/);
+                }
             }
         }
 
@@ -71,6 +79,10 @@ namespace HraBattleships2
                 if (shotResult.ShipSunken)
                 {
                     gameState = GameState.Seek;
+                    horizontal = true;
+                    /*předá všechny pole z hashsetu hitu do pole misses + ideálně i okolní 
+                     kde podle prvidel nemůže být lod    
+                    */
                 }
             }
             else
@@ -98,6 +110,82 @@ namespace HraBattleships2
             }
             exlude.Add(position);
             return position;
+        }
+
+        public Position ModeDamageHorizontal(byte x, byte y)
+        {
+            bool jeSmeremDoprava;
+
+            if (jeSmeremDoprava = true)
+            {
+                if (/*kontrola že je políčko o jedna vpravo součástí pole hits*/)
+                {
+                    x++;
+                    return ModeDamageHorizontal(x, y);
+                }
+                else if (/*kontrola že je políčko o jedna vpravo součástí pole missis*/)
+                {
+                    jeSmeremDoprava = false;
+                    return ModeDamageHorizontal(x,y);
+                }
+                else
+                {
+                    return new Position(x, y);
+                }
+            }
+            else
+            {
+                if (/*kontrola že je políčko o jedna vlevo součástí pole hits*/)
+                {
+                    x--;
+                    return ModeDamageHorizontal(x, y);
+                }
+                else if (/*kontrola že je políčko o jedna vlevo součástí pole missis*/)
+                {
+                    jeSmeremDoprava = true;
+                    horizontal = false;
+                    return ModeDamageVertical(x, y);
+                }
+                else
+                {
+                    return new Position(x, y);
+                }
+            }                   
+        }
+        public Position ModeDamageVertical(byte x, byte y)
+        {
+            bool jeSmeremNahoru = true;
+
+            if(jeSmeremNahoru = true)
+            {
+                if (/*kontrola že je políčko o jedna nahoru součástí pole hits*/)
+                {
+                    y++;
+                    return ModeDamageVertical(x, y);
+                }
+                else if (/*kontrola že je políčko o jedna nahoru součástí pole missis*/)
+                {
+                    jeSmeremNahoru = false;
+                    return ModeDamageVertical(x, y); 
+                }
+                else
+                {
+                    return new Position(x, y);
+                }
+            }
+            else
+            {
+                if (/*kontrola že je políčko o jedna dolů součástí pole hits*/)
+                {
+                    y--;
+                    return ModeDamageVertical(x, y);
+                }
+                else
+                {
+                    return new Position(x, y);
+                }
+            }
+            
         }
     }
 }
