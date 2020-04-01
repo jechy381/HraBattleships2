@@ -15,7 +15,9 @@ namespace HraBattleships2
         }
         GameState gameState = GameState.Seek;
 
+        Orientation orientation = Orientation.Right;
         public bool horizontal = true;
+        Position firstShot = null;
 
         public ShipPosition[] NewGame(GameSettings gameSettings)
         {
@@ -29,15 +31,6 @@ namespace HraBattleships2
             shipPositions.Add(new ShipPosition(ShipType.Cruiser, new Position(4, 5), Orientation.Down));
             shipPositions.Add(new ShipPosition(ShipType.Battleship, new Position(8, 10), Orientation.Down));
             shipPositions.Add(new ShipPosition(ShipType.Carrier, new Position(1, 12), Orientation.Right));
-
-            /*foreach (var shipType in gameSettings.ShipTypes.OrderByDescending(x => (int)x))
-            {
-                var position = new Position(1, y);
-                shipPositions.Add(new ShipPosition(shipType, position, Orientation.Right));
-                y += 2;
-            }
-            */
-
             return shipPositions.ToArray();
         }
 
@@ -61,11 +54,11 @@ namespace HraBattleships2
             {
                 if (horizontal == true)
                 {
-                    ModeDamageHorizontal(/*tady by měla být ta pozice z toho pole hits*/);                   
+                    return ModeDamageHorizontal(firstShot.X, firstShot.Y);
                 }
                 else
                 {
-                    ModeDamageVertical(/*tady by měla být ta pozice z toho pole hits*/);
+                    return ModeDamageVertical(firstShot.X, firstShot.Y);
                 }
             }
         }
@@ -76,13 +69,16 @@ namespace HraBattleships2
             if (shotResult.Hit)
             {
                 hits.Add(shotResult.Position);
+                if (firstShot == null)
+                {
+                    firstShot = shotResult.Position;
+                }
                 if (shotResult.ShipSunken)
                 {
                     gameState = GameState.Seek;
                     horizontal = true;
-                    /*předá všechny pole z hashsetu hitu do pole misses + ideálně i okolní 
-                     kde podle prvidel nemůže být lod    
-                    */
+                    firstShot = null; //Za předpokladu že tohle bude fungovat, by to mělo jít 
+                    orientation = Orientation.Right;                    
                 }
             }
             else
@@ -114,19 +110,24 @@ namespace HraBattleships2
 
         public Position ModeDamageHorizontal(byte x, byte y)
         {
-            bool jeSmeremDoprava = true;
+            Position poleVpravo = new Position(x++, y);
+            Position poleVlevo = new Position(x--, y);
+            Position poleNahore = new Position(x, y++);
+            Position poleDole = new Position(x, y--);
 
-            if (jeSmeremDoprava == true)
+            if (orientation == Orientation.Right)
             {
-                if (/*kontrola že je políčko o jedna vpravo součástí pole hits*/)
+                if (hits.Contains(poleVpravo))
                 {
                     x++;
+                    misses.Add(poleNahore);
+                    misses.Add(poleDole);
                     return ModeDamageHorizontal(x, y);
                 }
-                else if (/*kontrola že je políčko o jedna vpravo součástí pole missis*/)
+                else if (misses.Contains(poleVpravo))
                 {
-                    jeSmeremDoprava = false;
-                    return ModeDamageHorizontal(x,y);
+                    orientation = Orientation.Left;
+                    return ModeDamageHorizontal(x, y);
                 }
                 else
                 {
@@ -135,14 +136,16 @@ namespace HraBattleships2
             }
             else
             {
-                if (/*kontrola že je políčko o jedna vlevo součástí pole hits*/)
+                if (hits.Contains(poleVlevo))
                 {
                     x--;
+                    misses.Add(poleNahore);
+                    misses.Add(poleDole);
                     return ModeDamageHorizontal(x, y);
                 }
-                else if (/*kontrola že je políčko o jedna vlevo součástí pole missis*/)
+                else if (misses.Contains(poleVlevo))
                 {
-                    jeSmeremDoprava = true;
+                    orientation = Orientation.Up;
                     horizontal = false;
                     return ModeDamageVertical(x, y);
                 }
@@ -150,23 +153,28 @@ namespace HraBattleships2
                 {
                     return new Position(x, y);
                 }
-            }                   
+            }
         }
         public Position ModeDamageVertical(byte x, byte y)
         {
-            bool jeSmeremNahoru = true;
+            Position poleVpravo = new Position(x++, y);
+            Position poleVlevo = new Position(x--, y);
+            Position poleNahore = new Position(x, y++);
+            Position poleDole = new Position(x, y--);
 
-            if(jeSmeremNahoru == true)
+            if (orientation == Orientation.Up)
             {
-                if (/*kontrola že je políčko o jedna nahoru součástí pole hits*/)
+                if (hits.Contains(poleNahore))
                 {
                     y++;
+                    misses.Add(poleVpravo);
+                    misses.Add(poleVlevo);
                     return ModeDamageVertical(x, y);
                 }
-                else if (/*kontrola že je políčko o jedna nahoru součástí pole missis*/)
+                else if (misses.Contains(poleNahore))
                 {
-                    jeSmeremNahoru = false;
-                    return ModeDamageVertical(x, y); 
+                    orientation = Orientation.Down;
+                    return ModeDamageVertical(x, y);
                 }
                 else
                 {
@@ -175,9 +183,11 @@ namespace HraBattleships2
             }
             else
             {
-                if (/*kontrola že je políčko o jedna dolů součástí pole hits*/)
+                if (hits.Contains(poleDole))
                 {
                     y--;
+                    misses.Add(poleVpravo);
+                    misses.Add(poleVlevo);
                     return ModeDamageVertical(x, y);
                 }
                 else
@@ -185,7 +195,6 @@ namespace HraBattleships2
                     return new Position(x, y);
                 }
             }
-            
         }
     }
 }
