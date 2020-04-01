@@ -13,7 +13,10 @@ namespace HraBattleships2
             Seek,
             Destroy
         }
+        
         GameState gameState = GameState.Seek;
+
+        Orientation orientation;
 
         public bool horizontal = true;
 
@@ -59,13 +62,13 @@ namespace HraBattleships2
             }
             else
             {
-                if (horizontal = true)
+                if (horizontal == true)
                 {
-                    ModeDamageHorizontal(/*tady by měla být ta pozice z toho pole hits*/);                   
+                    return ModeDamageHorizontal(/*tady by měla být ta pozice z toho pole hits*/);                   
                 }
                 else
                 {
-                    ModeDamageVertical(/*tady by měla být ta pozice z toho pole hits*/);
+                    return ModeDamageVertical(/*tady by měla být ta pozice z toho pole hits*/);
                 }
             }
         }
@@ -116,7 +119,7 @@ namespace HraBattleships2
         {
             bool jeSmeremDoprava;
 
-            if (jeSmeremDoprava = true)
+            if (orientation == Orientation.Right)
             {
                 if (/*kontrola že je políčko o jedna vpravo součástí pole hits*/)
                 {
@@ -125,7 +128,7 @@ namespace HraBattleships2
                 }
                 else if (/*kontrola že je políčko o jedna vpravo součástí pole missis*/)
                 {
-                    jeSmeremDoprava = false;
+                    orientation = Orientation.Left;
                     return ModeDamageHorizontal(x,y);
                 }
                 else
@@ -142,7 +145,7 @@ namespace HraBattleships2
                 }
                 else if (/*kontrola že je políčko o jedna vlevo součástí pole missis*/)
                 {
-                    jeSmeremDoprava = true;
+                    orientation = Orientation.Right;
                     horizontal = false;
                     return ModeDamageVertical(x, y);
                 }
@@ -156,7 +159,7 @@ namespace HraBattleships2
         {
             bool jeSmeremNahoru = true;
 
-            if(jeSmeremNahoru = true)
+            if(orientation == Orientation.Up)
             {
                 if (/*kontrola že je políčko o jedna nahoru součástí pole hits*/)
                 {
@@ -165,7 +168,7 @@ namespace HraBattleships2
                 }
                 else if (/*kontrola že je políčko o jedna nahoru součástí pole missis*/)
                 {
-                    jeSmeremNahoru = false;
+                    orientation = Orientation.Down;
                     return ModeDamageVertical(x, y); 
                 }
                 else
