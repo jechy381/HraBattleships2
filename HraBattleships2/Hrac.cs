@@ -19,6 +19,9 @@ namespace HraBattleships2
         public bool horizontal = true;
         Position firstShot = null;
 
+        private HashSet<Position> misses = new HashSet<Position>();
+        private HashSet<Position> hits = new HashSet<Position>();
+
         public ShipPosition[] NewGame(GameSettings gameSettings)
         {
             height = gameSettings.BoardHeight;
@@ -45,13 +48,67 @@ namespace HraBattleships2
                 exlude.Add(new Position((byte)i, 15));
             }
         }
-        public void ExludeAdjacentToSunkenShip(HashSet<Position> hits, Orientation orientation)
+        public static void ExludeAdjancentPositionsToSunkenShip(HashSet<Position> hits, Orientation orientation)
         {
-
+            int pocetPrvku = hits.Count;
+            var positions = new HashSet<Position>();
+            positions.UnionWith(hits);
+            //pokud je lod 1 pole
+            if (pocetPrvku == 1)
+            {
+                var pos = positions.First();
+                hits.Add(new Position((byte)(pos.X + 1), (byte)(pos.Y)));
+                hits.Add(new Position((byte)(pos.X - 1), (byte)(pos.Y)));
+                hits.Add(new Position((byte)(pos.X), (byte)(pos.Y + 1)));
+                hits.Add(new Position((byte)(pos.X), (byte)(pos.Y - 1)));
+            }
+            //horizontalni lod
+            if (orientation == Orientation.Left || orientation == Orientation.Right)
+            {
+                byte minX = 0, maxX = 0;
+                foreach (Position pos in positions)
+                {
+                    if (minX == 0 || minX > pos.X)
+                    {
+                        minX = pos.X;
+                    }
+                    if (maxX == 0 || maxX < pos.X)
+                    {
+                        maxX = pos.X;
+                    }
+                    //prida okolni policka u kazde X souradnice
+                    hits.Add(new Position(pos.X, (byte)(pos.Y - 1)));
+                    hits.Add(new Position(pos.X, (byte)(pos.Y + 1)));
+                }
+                //prida limitni policka lodi
+                hits.Add(new Position((byte)(minX - 1), positions.First().Y));
+                hits.Add(new Position((byte)(maxX + 1), positions.First().Y));
+            }
+            //vertikalni lod
+            if (orientation == Orientation.Down || orientation == Orientation.Up)
+            {
+                byte minY = 0, maxY = 0;
+                foreach (Position pos in positions)
+                {
+                    if (minY == 0 || minY > pos.Y)
+                    {
+                        minY = pos.Y;
+                    }
+                    if (maxY == 0 || maxY < pos.Y)
+                    {
+                        maxY = pos.Y;
+                    }
+                    //prida okolni policka u kazde Y souradnice
+                    hits.Add(new Position((byte)(pos.X - 1), pos.Y));
+                    hits.Add(new Position((byte)(pos.X + 1), pos.Y));
+                }
+                //prida limitni policka lodi
+                hits.Add(new Position(positions.First().X, (byte)(minY - 1)));
+                hits.Add(new Position(positions.First().X, (byte)(maxY + 1)));
+            }
         }
 
-        private HashSet<Position> misses = new HashSet<Position>();
-        private HashSet<Position> hits = new HashSet<Position>();
+        
 
         public Position GetNextShotPosition()
         {
@@ -91,12 +148,13 @@ namespace HraBattleships2
                 }
                 if (shotResult.ShipSunken)
                 {
+                    ExludeAdjancentPositionsToSunkenShip(hits, orientation);
                     gameState = GameState.Seek;
                     horizontal = true;
                     firstShot = null; //Za předpokladu že tohle bude fungovat, by to mělo jít 
                     orientation = Orientation.Right;
                     hits.UnionWith(misses); //presune policka s trefenou lodi do misses
-                    hits.Clear();
+                    hits.Clear(); //uvolni hits pro dalsi lod
                 }
             }
             else
