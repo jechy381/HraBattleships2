@@ -45,13 +45,13 @@ namespace HraBattleships2
                 exlude.Add(new Position((byte)i, 15));
             }
         }
-        public void ExludeAdjacentToSunkenShip()
+        public void ExludeAdjacentToSunkenShip(HashSet<Position> hits, Orientation orientation)
         {
 
         }
 
-        HashSet<Position> misses = new HashSet<Position>();
-        HashSet<Position> hits = new HashSet<Position>();
+        private HashSet<Position> misses = new HashSet<Position>();
+        private HashSet<Position> hits = new HashSet<Position>();
 
         public Position GetNextShotPosition()
         {
@@ -94,7 +94,9 @@ namespace HraBattleships2
                     gameState = GameState.Seek;
                     horizontal = true;
                     firstShot = null; //Za předpokladu že tohle bude fungovat, by to mělo jít 
-                    orientation = Orientation.Right;                    
+                    orientation = Orientation.Right;
+                    hits.UnionWith(misses); //presune policka s trefenou lodi do misses
+                    hits.Clear();
                 }
             }
             else
