@@ -180,17 +180,12 @@ namespace HraBattleships2
         public Position ModeDamageHorizontal(byte x, byte y)
         {
             Position poleVpravo = new Position(x++, y);
-            Position poleVlevo = new Position(x--, y);
-            Position poleNahore = new Position(x, y++);
-            Position poleDole = new Position(x, y--);
-
+            Position poleVlevo = new Position(x--, y);            
             if (orientation == Orientation.Right)
             {
                 if (hits.Contains(poleVpravo))
                 {
-                    x++;
-                    misses.Add(poleNahore);
-                    misses.Add(poleDole);
+                    x++;                  
                     return ModeDamageHorizontal(x, y);
                 }
                 else if (misses.Contains(poleVpravo))
@@ -208,8 +203,6 @@ namespace HraBattleships2
                 if (hits.Contains(poleVlevo))
                 {
                     x--;
-                    misses.Add(poleNahore);
-                    misses.Add(poleDole);
                     return ModeDamageHorizontal(x, y);
                 }
                 else if (misses.Contains(poleVlevo))
@@ -226,8 +219,6 @@ namespace HraBattleships2
         }
         public Position ModeDamageVertical(byte x, byte y)
         {
-            Position poleVpravo = new Position(x++, y);
-            Position poleVlevo = new Position(x--, y);
             Position poleNahore = new Position(x, y++);
             Position poleDole = new Position(x, y--);
 
@@ -236,8 +227,6 @@ namespace HraBattleships2
                 if (hits.Contains(poleNahore))
                 {
                     y++;
-                    misses.Add(poleVpravo);
-                    misses.Add(poleVlevo);
                     return ModeDamageVertical(x, y);
                 }
                 else if (misses.Contains(poleNahore))
@@ -255,8 +244,6 @@ namespace HraBattleships2
                 if (hits.Contains(poleDole))
                 {
                     y--;
-                    misses.Add(poleVpravo);
-                    misses.Add(poleVlevo);
                     return ModeDamageVertical(x, y);
                 }
                 else
