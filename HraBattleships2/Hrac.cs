@@ -114,14 +114,7 @@ namespace HraBattleships2
         {
             if (gameState == GameState.Seek)
             {
-                if (!hits.Any(x => true))
-                {
-                    return null;
-                }
-                else
-                {
-                    return null;
-                }
+                return GetRandomPosition(misses);
             }
             else
             {
@@ -141,6 +134,7 @@ namespace HraBattleships2
         {
             if (shotResult.Hit)
             {
+                gameState = GameState.Destroy;
                 hits.Add(shotResult.Position);
                 if (firstShot == null)
                 {
@@ -165,11 +159,10 @@ namespace HraBattleships2
 
 
         Random rnd = new Random();
-        public Position GetRandomPosition(HashSet<Position> hits, HashSet<Position> misses)
+        public Position GetRandomPosition(HashSet<Position> used)
         {
             HashSet<Position> exlude = new HashSet<Position>();
-            exlude.UnionWith(hits);
-            exlude.UnionWith(misses);
+            exlude.UnionWith(used);
 
             byte x = (byte)rnd.Next(1, width - 1);
             byte y = (byte)rnd.Next(1, height - 1);
