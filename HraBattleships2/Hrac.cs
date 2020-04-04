@@ -31,8 +31,11 @@ namespace HraBattleships2
             var shipPositions = new List<ShipPosition>();
 
             shipPositions.Add(new ShipPosition(ShipType.Submarine, new Position(1, 2), Orientation.Right));
+            shipPositions.Add(new ShipPosition(ShipType.Submarine, new Position(12, 8), Orientation.Right));
             shipPositions.Add(new ShipPosition(ShipType.Destroyer, new Position(12, 4), Orientation.Right));
+            shipPositions.Add(new ShipPosition(ShipType.Destroyer, new Position(6, 1), Orientation.Down));
             shipPositions.Add(new ShipPosition(ShipType.Cruiser, new Position(4, 5), Orientation.Down));
+            shipPositions.Add(new ShipPosition(ShipType.Cruiser, new Position(10, 1), Orientation.Right));
             shipPositions.Add(new ShipPosition(ShipType.Battleship, new Position(8, 10), Orientation.Down));
             shipPositions.Add(new ShipPosition(ShipType.Carrier, new Position(1, 12), Orientation.Right));
             return shipPositions.ToArray();
@@ -120,11 +123,11 @@ namespace HraBattleships2
             {
                 if (horizontal == true)
                 {
-                    return ModeDamageHorizontal(firstShot.X, firstShot.Y);
+                    return ModeDamageHorizontal(firstShot.X, firstShot.Y,hits,misses);
                 }
                 else
                 {
-                    return ModeDamageVertical(firstShot.X, firstShot.Y);
+                    return ModeDamageVertical(firstShot.X, firstShot.Y,hits,misses);
                 }
             }
         }
@@ -177,39 +180,40 @@ namespace HraBattleships2
             return position;
         }
 
-        public Position ModeDamageHorizontal(byte x, byte y)
-        {
-            Position poleVpravo = new Position(x++, y);
-            Position poleVlevo = new Position(x--, y);            
+        public Position ModeDamageHorizontal(byte x, byte y, HashSet<Position> hits, HashSet<Position> misses)
+        {         
+            Position poleVpravo = new Position(x+=1, y);           
+            Position poleVlevo = new Position(x-=2, y);
+            
             if (orientation == Orientation.Right)
             {
                 if (hits.Contains(poleVpravo))
                 {
-                    x++;                  
-                    return ModeDamageHorizontal(x, y);
+                    x+=2;                  
+                    return ModeDamageHorizontal(x, y,hits,misses);
                 }
                 else if (misses.Contains(poleVpravo))
                 {
                     orientation = Orientation.Left;
-                    return ModeDamageHorizontal(x, y);
+                    return ModeDamageHorizontal(firstShot.X, firstShot.Y,hits,misses);
                 }
                 else
                 {
+                    x += 2;
                     return new Position(x, y);
                 }
             }
             else
             {
                 if (hits.Contains(poleVlevo))
-                {
-                    x--;
-                    return ModeDamageHorizontal(x, y);
+                {                    
+                    return ModeDamageHorizontal(x, y,hits,misses);
                 }
                 else if (misses.Contains(poleVlevo))
                 {
-                    orientation = Orientation.Up;
+                    orientation = Orientation.Down;
                     horizontal = false;
-                    return ModeDamageVertical(x, y);
+                    return ModeDamageVertical(firstShot.X, firstShot.Y,hits,misses);
                 }
                 else
                 {
@@ -217,34 +221,34 @@ namespace HraBattleships2
                 }
             }
         }
-        public Position ModeDamageVertical(byte x, byte y)
+        public Position ModeDamageVertical(byte x, byte y, HashSet<Position> hits, HashSet<Position> misses)
         {
-            Position poleNahore = new Position(x, y++);
-            Position poleDole = new Position(x, y--);
+            Position poleDole = new Position(x, y+=1);
+            Position poleNahore = new Position(x, y-=2);
 
-            if (orientation == Orientation.Up)
+            if (orientation == Orientation.Down)
             {
-                if (hits.Contains(poleNahore))
+                if (hits.Contains(poleDole))
                 {
-                    y++;
-                    return ModeDamageVertical(x, y);
+                    y+=2;
+                    return ModeDamageVertical(x, y,hits,misses);
                 }
-                else if (misses.Contains(poleNahore))
+                else if (misses.Contains(poleDole))
                 {
-                    orientation = Orientation.Down;
-                    return ModeDamageVertical(x, y);
+                    orientation = Orientation.Up;
+                    return ModeDamageVertical(firstShot.X, firstShot.Y,hits,misses);
                 }
                 else
                 {
+                    y += 2;
                     return new Position(x, y);
                 }
             }
             else
             {
-                if (hits.Contains(poleDole))
-                {
-                    y--;
-                    return ModeDamageVertical(x, y);
+                if (hits.Contains(poleNahore))
+                {                   
+                    return ModeDamageVertical(x, y,hits,misses);
                 }
                 else
                 {
