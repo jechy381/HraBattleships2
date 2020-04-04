@@ -55,7 +55,7 @@ namespace Test
                 exlude.Add(new Position((byte)i, (byte)(width - 1)));
             }
         }
-        public static void ExludeAdjancentPositionsToSunkenShip(HashSet<Position> hits, Orientation orientation)
+        public HashSet<Position> ExludeAdjancentPositionsToSunkenShip(HashSet<Position> hits, Orientation orientation)
         {
             int pocetPrvku = hits.Count;
             var positions = new HashSet<Position>();
@@ -113,6 +113,7 @@ namespace Test
                 hits.Add(new Position(positions.First().X, (byte)(minY - 1)));
                 hits.Add(new Position(positions.First().X, (byte)(maxY + 1)));
             }
+            return hits;
         }
 
 
@@ -149,12 +150,12 @@ namespace Test
                 }
                 if (shotResult.ShipSunken)
                 {
-                    ExludeAdjancentPositionsToSunkenShip(_hits, orientation);
+                    _misses.UnionWith(ExludeAdjancentPositionsToSunkenShip(_hits, orientation));
+                    _misses.UnionWith(_hits);//presune policka s trefenou lodi do misses
                     gameState = GameState.Seek;
                     horizontal = true;
                     firstShot = null; //Za předpokladu že tohle bude fungovat, by to mělo jít 
-                    orientation = Orientation.Right;
-                    _misses.UnionWith(_hits); //presune policka s trefenou lodi do misses
+                    orientation = Orientation.Right;    
                     _hits.Clear(); //uvolni hits pro dalsi lod
                 }
             }
