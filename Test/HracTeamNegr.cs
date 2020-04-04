@@ -10,7 +10,7 @@ namespace Test
 {
     public class HracTeamNegr : IBattleshipsGame
     {
-        int height, width;
+        int height = 0, width = 0;
         enum GameState
         {
             Seek,
@@ -25,16 +25,17 @@ namespace Test
 
         public HashSet<Position> _misses = new HashSet<Position>();
         public HashSet<Position> _hits = new HashSet<Position>();
+        
 
-
+        
         public ShipPosition[] NewGame(GameSettings gameSettings)
         {
             height = gameSettings.BoardHeight;
             width = gameSettings.BoardWidth;
 
-            ExludePositions(_misses, width, height);
             var shipPositions = new List<ShipPosition>();
 
+            ExludePositions(_misses, width, height);
             shipPositions.Add(new ShipPosition(ShipType.Submarine, new Position(1, 2), Orientation.Right));
             shipPositions.Add(new ShipPosition(ShipType.Submarine, new Position(12, 8), Orientation.Right));
             shipPositions.Add(new ShipPosition(ShipType.Destroyer, new Position(12, 4), Orientation.Right));
@@ -116,14 +117,56 @@ namespace Test
             }
             return hits;
         }
+        /*
+        public int SpocitejVsechnyKombinaceCoNebudouFungovat(List<Position> positions)
+        {
+            int pocetPoli = 0;
+            foreach (var lod in positions)
+            {
+                switch (lod)
+                {
+                    case ShipType.Submarine:
+                        pocetPoli += 5;
+                        break;
+                    case ShipType.Destroyer:
+                        pocetPoli += 8;
+                        break;
+                    case ShipType.Cruiser:
+                        pocetPoli += 11;
+                        break;
+                    case ShipType.Battleship:
+                        pocetPoli += 14;
+                        break;
+                    case ShipType.Carrier:
+                        pocetPoli += 17;
+                        break;
+                }
+            }
+            return pocetPoli;
+        }*/
 
 
+        int? pocetPoli = null;
+        
+        
 
         public Position GetNextShotPosition()
         {
+            if(pocetPoli == null)
+            {
+                pocetPoli = ((width - 2) * (height - 2) / 2) - 80;
+                
+            }
             if (gameState == GameState.Seek)
             {
-                return GetRandomPosition(_misses);
+                if (pocetPoli != 0)
+                {
+                    pocetPoli--;
+                    Debug.WriteLine("V sachovnici zbyva {0} poli", pocetPoli);
+                    return GetRandomSachovnicePosition(_misses);
+                }          
+                else
+                    return GetRandomPosition(_misses);
             }
             else
             {
@@ -135,9 +178,9 @@ namespace Test
                 {
                     return ModeDamageVertical(firstShot.X, firstShot.Y, _hits, _misses);
                 }
-            }
+            }  
         }
-
+        
 
         public void ShotResult(ShotResult shotResult)
         {
@@ -181,6 +224,9 @@ namespace Test
 
 
         Random rnd = new Random();
+
+        
+
         public Position GetRandomPosition(HashSet<Position> used)
         {
             byte x = (byte)rnd.Next(1, width - 1);
@@ -190,6 +236,48 @@ namespace Test
             {
                 x = (byte)rnd.Next(1, width - 1);
                 y = (byte)rnd.Next(1, height - 1);
+                position = new Position(x, y);
+            }
+            used.Add(position);
+            return position;
+        }
+        public Position GetRandomSachovnicePosition(HashSet<Position> used)
+        {
+            byte x = (byte)rnd.Next(1, width - 1);
+            byte y = (byte)rnd.Next(1, height - 1);
+            if (x % 2 != 0)//suda
+            {
+                while (y % 2 != 0)//suda
+                {
+                    y = (byte)rnd.Next(1, height - 1);
+                }
+            }
+            else
+            {
+                while (y % 2 != 1)//licha
+                {
+                    y = (byte)rnd.Next(1, height - 1);
+                }
+            }
+            Position position = new Position(x, y);
+            while (used.Contains(position))
+            {
+                x = (byte)rnd.Next(1, width - 1);
+                y = (byte)rnd.Next(1, height - 1);
+                if (x % 2 != 0)//suda
+                {
+                    while (y % 2 != 0)//suda
+                    {
+                        y = (byte)rnd.Next(1, height - 1);
+                    }
+                }
+                else
+                {
+                    while (y % 2 != 1)//licha
+                    {
+                        y = (byte)rnd.Next(1, height - 1);
+                    }
+                }
                 position = new Position(x, y);
             }
             used.Add(position);

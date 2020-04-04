@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -94,10 +95,13 @@ namespace BattleshipsGUI
         }
 
         private Rectangle GetTile(int x, int y) => new Rectangle(x * _tileWidth + 1, y * _tileHeight + 1, _tileWidth - 1, _tileHeight - 1);
-
+        Stopwatch s1 = new Stopwatch();
         private void Shoot(object sender, EventArgs e)
         {
+            s1.Start();
             var pos = _activePlayer.player.GetNextShotPosition();
+            s1.Stop();
+            Debug.WriteLine("Tah trval {0} ms", s1.ElapsedMilliseconds);
 
             if (pos.X < 0 || pos.X >= _gs.BoardWidth || pos.Y < 0 || pos.Y >= _gs.BoardHeight)
             {
