@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using GymVod.Battleships.Common;
 
-namespace HraBattleships2
+namespace Test
 {
-    public class Hrac : IBattleshipsGame
+    public class HracTeamNegr : IBattleshipsGame
     {
         int height, width;
         enum GameState
@@ -15,19 +17,21 @@ namespace HraBattleships2
         }
         GameState gameState = GameState.Seek;
 
+
         Orientation orientation = Orientation.Right;
         public bool horizontal = true;
         Position firstShot = null;
 
-        private HashSet<Position> misses = new HashSet<Position>();
-        private HashSet<Position> hits = new HashSet<Position>();
+        public HashSet<Position> _misses = new HashSet<Position>();
+        public HashSet<Position> _hits = new HashSet<Position>();
+
 
         public ShipPosition[] NewGame(GameSettings gameSettings)
         {
             height = gameSettings.BoardHeight;
             width = gameSettings.BoardWidth;
 
-            ExludePositions(misses, width, height);
+            ExludePositions(_misses, width, height);
             var shipPositions = new List<ShipPosition>();
 
             shipPositions.Add(new ShipPosition(ShipType.Submarine, new Position(1, 2), Orientation.Right));
@@ -111,23 +115,23 @@ namespace HraBattleships2
             }
         }
 
-        
+
 
         public Position GetNextShotPosition()
         {
             if (gameState == GameState.Seek)
             {
-                return GetRandomPosition(misses);
+                return GetRandomPosition(_misses);
             }
             else
             {
                 if (horizontal == true)
                 {
-                    return ModeDamageHorizontal(firstShot.X, firstShot.Y,hits,misses);
+                    return ModeDamageHorizontal(firstShot.X, firstShot.Y, _hits, _misses);
                 }
                 else
                 {
-                    return ModeDamageVertical(firstShot.X, firstShot.Y,hits,misses);
+                    return ModeDamageVertical(firstShot.X, firstShot.Y, _hits, _misses);
                 }
             }
         }
@@ -138,25 +142,25 @@ namespace HraBattleships2
             if (shotResult.Hit)
             {
                 gameState = GameState.Destroy;
-                hits.Add(shotResult.Position);
+                _hits.Add(shotResult.Position);
                 if (firstShot == null)
                 {
                     firstShot = shotResult.Position;
                 }
                 if (shotResult.ShipSunken)
                 {
-                    ExludeAdjancentPositionsToSunkenShip(hits, orientation);
+                    ExludeAdjancentPositionsToSunkenShip(_hits, orientation);
                     gameState = GameState.Seek;
                     horizontal = true;
                     firstShot = null; //Za předpokladu že tohle bude fungovat, by to mělo jít 
                     orientation = Orientation.Right;
-                    hits.UnionWith(misses); //presune policka s trefenou lodi do misses
-                    hits.Clear(); //uvolni hits pro dalsi lod
+                    _misses.UnionWith(_hits); //presune policka s trefenou lodi do misses
+                    _hits.Clear(); //uvolni hits pro dalsi lod
                 }
             }
             else
             {
-                misses.Add(shotResult.Position);
+                _misses.Add(shotResult.Position);
             }
         }
 
@@ -164,38 +168,35 @@ namespace HraBattleships2
         Random rnd = new Random();
         public Position GetRandomPosition(HashSet<Position> used)
         {
-            HashSet<Position> exlude = new HashSet<Position>();
-            exlude.UnionWith(used);
-
             byte x = (byte)rnd.Next(1, width - 1);
             byte y = (byte)rnd.Next(1, height - 1);
             Position position = new Position(x, y);
-            while (exlude.Contains(position))
+            while (used.Contains(position))
             {
                 x = (byte)rnd.Next(1, width - 1);
                 y = (byte)rnd.Next(1, height - 1);
                 position = new Position(x, y);
             }
-            exlude.Add(position);
+            used.Add(position);
             return position;
         }
 
         public Position ModeDamageHorizontal(byte x, byte y, HashSet<Position> hits, HashSet<Position> misses)
-        {         
-            Position poleVpravo = new Position(x+=1, y);           
-            Position poleVlevo = new Position(x-=2, y);
-            
+        {
+            Position poleVpravo = new Position(x += 1, y);
+            Position poleVlevo = new Position(x -= 2, y);
+
             if (orientation == Orientation.Right)
             {
                 if (hits.Contains(poleVpravo))
                 {
-                    x+=2;                  
-                    return ModeDamageHorizontal(x, y,hits,misses);
+                    x += 2;
+                    return ModeDamageHorizontal(x, y, hits, misses);
                 }
                 else if (misses.Contains(poleVpravo))
                 {
                     orientation = Orientation.Left;
-                    return ModeDamageHorizontal(firstShot.X, firstShot.Y,hits,misses);
+                    return ModeDamageHorizontal(firstShot.X, firstShot.Y, hits, misses);
                 }
                 else
                 {
@@ -206,14 +207,14 @@ namespace HraBattleships2
             else
             {
                 if (hits.Contains(poleVlevo))
-                {                    
-                    return ModeDamageHorizontal(x, y,hits,misses);
+                {
+                    return ModeDamageHorizontal(x, y, hits, misses);
                 }
                 else if (misses.Contains(poleVlevo))
                 {
                     orientation = Orientation.Down;
                     horizontal = false;
-                    return ModeDamageVertical(firstShot.X, firstShot.Y,hits,misses);
+                    return ModeDamageVertical(firstShot.X, firstShot.Y, hits, misses);
                 }
                 else
                 {
@@ -223,20 +224,20 @@ namespace HraBattleships2
         }
         public Position ModeDamageVertical(byte x, byte y, HashSet<Position> hits, HashSet<Position> misses)
         {
-            Position poleDole = new Position(x, y+=1);
-            Position poleNahore = new Position(x, y-=2);
+            Position poleDole = new Position(x, y += 1);
+            Position poleNahore = new Position(x, y -= 2);
 
             if (orientation == Orientation.Down)
             {
                 if (hits.Contains(poleDole))
                 {
-                    y+=2;
-                    return ModeDamageVertical(x, y,hits,misses);
+                    y += 2;
+                    return ModeDamageVertical(x, y, hits, misses);
                 }
                 else if (misses.Contains(poleDole))
                 {
                     orientation = Orientation.Up;
-                    return ModeDamageVertical(firstShot.X, firstShot.Y,hits,misses);
+                    return ModeDamageVertical(firstShot.X, firstShot.Y, hits, misses);
                 }
                 else
                 {
@@ -247,8 +248,8 @@ namespace HraBattleships2
             else
             {
                 if (hits.Contains(poleNahore))
-                {                   
-                    return ModeDamageVertical(x, y,hits,misses);
+                {
+                    return ModeDamageVertical(x, y, hits, misses);
                 }
                 else
                 {
@@ -258,3 +259,4 @@ namespace HraBattleships2
         }
     }
 }
+

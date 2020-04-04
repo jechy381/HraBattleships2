@@ -34,16 +34,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DumbLodiiis">
-      <HintPath>..\..\..\..\Downloads\battlegui\dll\DumbLodiiis.dll</HintPath>
+      <HintPath>..\..\..\..\Downloads\battlegui\battlegui\dll\DumbLodiiis.dll</HintPath>
     </Reference>
     <Reference Include="GymVod.Battleships.Common">
-      <HintPath>..\..\..\..\Downloads\battlegui\dll\GymVod.Battleships.Common.dll</HintPath>
+      <HintPath>..\..\..\..\Downloads\battlegui\battlegui\dll\GymVod.Battleships.Common.dll</HintPath>
     </Reference>
     <Reference Include="GymVod.Battleships.DataLayer">
-      <HintPath>..\..\..\..\Downloads\battlegui\dll\GymVod.Battleships.DataLayer.dll</HintPath>
+      <HintPath>..\..\..\..\Downloads\battlegui\battlegui\dll\GymVod.Battleships.DataLayer.dll</HintPath>
     </Reference>
     <Reference Include="GymVod.Battleships.Services">
-      <HintPath>..\..\..\..\Downloads\battlegui\dll\GymVod.Battleships.Services.dll</HintPath>
+      <HintPath>..\..\..\..\Downloads\battlegui\battlegui\dll\GymVod.Battleships.Services.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -64,6 +64,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="HracTeamNegr.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
