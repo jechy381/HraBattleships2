@@ -1,9 +1,11 @@
 ﻿using GymVod.Battleships.Common;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Test;
 
 namespace BattleshipsGUI
 {
@@ -16,9 +18,9 @@ namespace BattleshipsGUI
         static void Main()
         {
             // zde zvol hráče
-            IBattleshipsGame hrac1 = new HraBattleships2.Hrac();
+            IBattleshipsGame hrac1 = new HracTeamNegr();
             IBattleshipsGame hrac2 = new DumbLodiiis.DumbBot();
-
+            Debug.WriteLine("neco");
             var gs = new GameSettings(20, 20, new ShipType[]
             {
                 ShipType.Carrier,                       // 1x

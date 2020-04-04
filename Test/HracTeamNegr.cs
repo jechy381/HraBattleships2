@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -150,7 +151,20 @@ namespace Test
                 }
                 if (shotResult.ShipSunken)
                 {
+                    Debug.WriteLine(orientation);
+                    var debugHash = new HashSet<Position>();
+                    var pocetPoliLodi = _hits.Count;
+                    Debug.WriteLine("Počet polí lodi: {0}", pocetPoliLodi);
+                    debugHash.UnionWith(ExludeAdjancentPositionsToSunkenShip(_hits, orientation));
+                    foreach (Position vec in debugHash)
+                    {
+                        Debug.WriteLine("[{0}, {1}]", vec.X, vec.Y);
+                        
+                    }
+                    Debug.WriteLine("Počet exludovaných polí kolem: {0}", debugHash.Count - pocetPoliLodi);
+
                     _misses.UnionWith(ExludeAdjancentPositionsToSunkenShip(_hits, orientation));
+                    
                     _misses.UnionWith(_hits);//presune policka s trefenou lodi do misses
                     gameState = GameState.Seek;
                     horizontal = true;
