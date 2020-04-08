@@ -25,13 +25,21 @@ namespace Test
 
         public HashSet<Position> _misses = new HashSet<Position>();
         public HashSet<Position> _hits = new HashSet<Position>();
-        
 
-        
+        int pocetExludovanych;
+
         public ShipPosition[] NewGame(GameSettings gameSettings)
         {
             height = gameSettings.BoardHeight;
             width = gameSettings.BoardWidth;
+            pocetExludovanych = 0; 
+            foreach (var shipType in gameSettings.ShipTypes)
+            {
+                pocetExludovanych += PocetPoliExludovani(shipType);
+            }
+            Debug.WriteLine(pocetExludovanych);
+
+
 
             var shipPositions = new List<ShipPosition>();
 
@@ -117,12 +125,10 @@ namespace Test
             }
             return hits;
         }
-        /*
-        public int SpocitejVsechnyKombinaceCoNebudouFungovat(List<Position> positions)
+      
+        public int PocetPoliExludovani(ShipType lod)
         {
             int pocetPoli = 0;
-            foreach (var lod in positions)
-            {
                 switch (lod)
                 {
                     case ShipType.Submarine:
@@ -141,15 +147,11 @@ namespace Test
                         pocetPoli += 17;
                         break;
                 }
-            }
             return pocetPoli;
-        }*/
+        }
 
 
         int? pocetPoli = null;
-        
-        
-
         public Position GetNextShotPosition()
         {
             if(pocetPoli == null)
@@ -283,7 +285,31 @@ namespace Test
             used.Add(position);
             return position;
         }
-
+        HashSet<Position> sachovnice = new HashSet<Position>();
+        public void NaplnSachovnici(int width, int height, HashSet<Position> positions)
+        {
+            for(int i = 1; i < width - 1; i++)
+            {
+                for(int k = 1; k < height - 1; k++)
+                {
+                    if(i % 2 == 0 && k % 2 == 0)
+                    {
+                        positions.Add(new Position((byte)i, (byte)k));
+                    }
+                    if (i % 2 == 1 && k % 2 == 1)
+                    {
+                        positions.Add(new Position((byte)i, (byte)k));
+                    }
+                }
+            }
+        }/*
+        public Position GetNextRandomPos(HashSet<Position> used)
+        {
+            do
+            {
+                
+            } while ();
+        } */
         public Position ModeDamageHorizontal(byte x, byte y, HashSet<Position> hits, HashSet<Position> misses)
         {
             Position poleVpravo = new Position(x += 1, y);
