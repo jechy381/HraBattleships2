@@ -8,38 +8,43 @@ using GymVod.Battleships.Common;
 
 namespace Test
 {
+    public enum GameState
+    {
+        Seek,
+        Destroy
+    }
     public class HracTeamNegr : IBattleshipsGame
     {
-        int height = 0, width = 0;
-        enum GameState
-        {
-            Seek,
-            Destroy
-        }
-        GameState gameState = GameState.Seek;
+        Random rnd = new Random();
 
+        private GameState gameState = GameState.Seek;
+        private Orientation orientation = Orientation.Right;
 
-        Orientation orientation = Orientation.Right;
-        public bool horizontal = true;
-        Position firstShot = null;
+        private int height = 0, width = 0;
 
-        public HashSet<Position> _misses = new HashSet<Position>();
-        public HashSet<Position> _hits = new HashSet<Position>();
+        private bool horizontal = true;
+        private Position firstShot = null;
 
-        int pocetExludovanych;
+        private HashSet<Position> _misses = new HashSet<Position>();
+        private HashSet<Position> _hits = new HashSet<Position>();
+
+        private int _pocetPoli;
+        private int _pocetExludovanych;
 
         public ShipPosition[] NewGame(GameSettings gameSettings)
         {
             height = gameSettings.BoardHeight;
             width = gameSettings.BoardWidth;
-            pocetExludovanych = 0; 
+            _pocetExludovanych = 0; 
             foreach (var shipType in gameSettings.ShipTypes)
             {
-                pocetExludovanych += PocetPoliExludovani(shipType);
+                _pocetExludovanych += PocetPoliExludovani(shipType);
             }
-            Debug.WriteLine(pocetExludovanych);
+            Debug.WriteLine("Exludované: " + _pocetExludovanych);
 
+            _pocetPoli = ((width - 2) * (height - 2) / 2) - _pocetExludovanych;
 
+            Debug.WriteLine("Možné pole šachovnice: " + _pocetPoli);
 
             var shipPositions = new List<ShipPosition>();
 
@@ -55,7 +60,7 @@ namespace Test
             return shipPositions.ToArray();
         }
         //probehne na startu
-        public void ExludePositions(HashSet<Position> exlude, int width, int height)
+        private void ExludePositions(HashSet<Position> exlude, int width, int height)
         {
             for (int i = 0; i <= width; i++)
             {
@@ -65,7 +70,7 @@ namespace Test
                 exlude.Add(new Position((byte)i, (byte)(width - 1)));
             }
         }
-        public HashSet<Position> ExludeAdjancentPositionsToSunkenShip(HashSet<Position> hits, Orientation orientation)
+        private HashSet<Position> ExludeAdjancentPositionsToSunkenShip(HashSet<Position> hits, Orientation orientation)
         {
             int pocetPrvku = hits.Count;
             var positions = new HashSet<Position>();
@@ -125,8 +130,7 @@ namespace Test
             }
             return hits;
         }
-      
-        public int PocetPoliExludovani(ShipType lod)
+        private int PocetPoliExludovani(ShipType lod)
         {
             int pocetPoli = 0;
                 switch (lod)
@@ -149,22 +153,14 @@ namespace Test
                 }
             return pocetPoli;
         }
-
-
-        int? pocetPoli = null;
         public Position GetNextShotPosition()
         {
-            if(pocetPoli == null)
-            {
-                pocetPoli = ((width - 2) * (height - 2) / 2) - 80;
-                
-            }
             if (gameState == GameState.Seek)
             {
-                if (pocetPoli != 0)
+                if (_pocetPoli != 0)
                 {
-                    pocetPoli--;
-                    Debug.WriteLine("V sachovnici zbyva {0} poli", pocetPoli);
+                    _pocetPoli--;
+                    Debug.WriteLine("V sachovnici zbyva {0} poli", _pocetPoli);
                     return GetRandomSachovnicePosition(_misses);
                 }          
                 else
@@ -182,8 +178,6 @@ namespace Test
                 }
             }  
         }
-        
-
         public void ShotResult(ShotResult shotResult)
         {
             if (shotResult.Hit)
@@ -223,13 +217,7 @@ namespace Test
                 _misses.Add(shotResult.Position);
             }
         }
-
-
-        Random rnd = new Random();
-
-        
-
-        public Position GetRandomPosition(HashSet<Position> used)
+        private Position GetRandomPosition(HashSet<Position> used)
         {
             byte x = (byte)rnd.Next(1, width - 1);
             byte y = (byte)rnd.Next(1, height - 1);
@@ -243,7 +231,7 @@ namespace Test
             used.Add(position);
             return position;
         }
-        public Position GetRandomSachovnicePosition(HashSet<Position> used)
+        private Position GetRandomSachovnicePosition(HashSet<Position> used)
         {
             byte x = (byte)rnd.Next(1, width - 1);
             byte y = (byte)rnd.Next(1, height - 1);
@@ -285,32 +273,8 @@ namespace Test
             used.Add(position);
             return position;
         }
-        HashSet<Position> sachovnice = new HashSet<Position>();
-        public void NaplnSachovnici(int width, int height, HashSet<Position> positions)
-        {
-            for(int i = 1; i < width - 1; i++)
-            {
-                for(int k = 1; k < height - 1; k++)
-                {
-                    if(i % 2 == 0 && k % 2 == 0)
-                    {
-                        positions.Add(new Position((byte)i, (byte)k));
-                    }
-                    if (i % 2 == 1 && k % 2 == 1)
-                    {
-                        positions.Add(new Position((byte)i, (byte)k));
-                    }
-                }
-            }
-        }/*
-        public Position GetNextRandomPos(HashSet<Position> used)
-        {
-            do
-            {
-                
-            } while ();
-        } */
-        public Position ModeDamageHorizontal(byte x, byte y, HashSet<Position> hits, HashSet<Position> misses)
+
+        private Position ModeDamageHorizontal(byte x, byte y, HashSet<Position> hits, HashSet<Position> misses)
         {
             Position poleVpravo = new Position(x += 1, y);
             Position poleVlevo = new Position(x -= 2, y);
@@ -351,7 +315,7 @@ namespace Test
                 }
             }
         }
-        public Position ModeDamageVertical(byte x, byte y, HashSet<Position> hits, HashSet<Position> misses)
+        private Position ModeDamageVertical(byte x, byte y, HashSet<Position> hits, HashSet<Position> misses)
         {
             Position poleDole = new Position(x, y += 1);
             Position poleNahore = new Position(x, y -= 2);
