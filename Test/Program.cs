@@ -18,7 +18,7 @@ namespace BattleshipsGUI
         static void Main()
         {
             // zde zvol hráče
-            IBattleshipsGame hrac1 = new HracTeamNegr();
+            IBattleshipsGame hrac1 = new HraBattleships2.Hrac();
             IBattleshipsGame hrac2 = new DumbLodiiis.DumbBot();
             Debug.WriteLine("neco");
             var gs = new GameSettings(20, 20, new ShipType[]

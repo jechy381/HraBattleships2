@@ -33,16 +33,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DumbLodiiis">
+    <Reference Include="DumbLodiiis, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Downloads\battlegui\battlegui\dll\DumbLodiiis.dll</HintPath>
     </Reference>
-    <Reference Include="GymVod.Battleships.Common">
+    <Reference Include="GymVod.Battleships.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Downloads\battlegui\battlegui\dll\GymVod.Battleships.Common.dll</HintPath>
     </Reference>
-    <Reference Include="GymVod.Battleships.DataLayer">
+    <Reference Include="GymVod.Battleships.DataLayer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Downloads\battlegui\battlegui\dll\GymVod.Battleships.DataLayer.dll</HintPath>
     </Reference>
-    <Reference Include="GymVod.Battleships.Services">
+    <Reference Include="GymVod.Battleships.Services, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Downloads\battlegui\battlegui\dll\GymVod.Battleships.Services.dll</HintPath>
     </Reference>
     <Reference Include="System" />
