@@ -30,9 +30,20 @@ namespace Test
 
         private int _pocetPoli;
         private int _pocetExludovanych;
-
+        private void Reset()
+        {
+            gameState = GameState.Seek;
+            orientation = Orientation.Right;
+            horizontal = true;
+            firstShot = null;
+            _misses.Clear();
+            _hits.Clear();
+            _pocetPoli = 0;
+            _pocetExludovanych = 0;
+        }
         public ShipPosition[] NewGame(GameSettings gameSettings)
         {
+            Reset();
             height = gameSettings.BoardHeight;
             width = gameSettings.BoardWidth;
             _pocetExludovanych = 0; 
@@ -178,8 +189,11 @@ namespace Test
                 }
             }  
         }
+        int pocetTahu = 0;
+        int pocetPotopenych = 0;
         public void ShotResult(ShotResult shotResult)
         {
+            pocetTahu++;
             if (shotResult.Hit)
             {
                 gameState = GameState.Destroy;
@@ -190,6 +204,7 @@ namespace Test
                 }
                 if (shotResult.ShipSunken)
                 {
+                    pocetPotopenych++;   
                     Debug.WriteLine(orientation);
                     var debugHash = new HashSet<Position>();
                     var pocetPoliLodi = _hits.Count;
@@ -210,6 +225,14 @@ namespace Test
                     firstShot = null; //Za předpokladu že tohle bude fungovat, by to mělo jít 
                     orientation = Orientation.Right;    
                     _hits.Clear(); //uvolni hits pro dalsi lod
+                    if (pocetPotopenych == 6)
+                    {
+                        Debug.WriteLine("Pocet tahu na vetsinu: " + pocetTahu);
+                    }
+                    if (pocetPotopenych == 8)
+                    {
+                        Debug.WriteLine("Pocet tahu: " + pocetTahu);
+                    }
                 }
             }
             else
